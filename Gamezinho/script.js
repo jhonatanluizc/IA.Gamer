@@ -5,6 +5,8 @@ var numero_colunas = 8;
 var numero_linhas = 8;
 var numero_casas = numero_colunas * numero_linhas;
 
+var turn = true;
+
 while (x < numero_casas) {
     //console.log("Hey "+x);
     $("#game").append(" <div class='div-casa' id='" + x + "'></div> ");
