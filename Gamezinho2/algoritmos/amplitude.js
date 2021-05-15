@@ -332,13 +332,12 @@ var mapa = [
     ["0", "0", "1", "1", "1", "0", "0", "2", "0", "0", "1", "1", "1", "0", "0"]
 ]
 
-var sol = new busca()
+var solucao = new busca()
 var caminho = []
 
 var origem = [14, 7]
 var destino = [5, 0]
 
-
-var caminho = sol.amplitude(origem, destino)
+var caminho = solucao.amplitude(origem, destino)
 
 console.log("Amplitude.......: ", caminho)
