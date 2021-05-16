@@ -32,6 +32,7 @@ let rollCount = 0;
 const sound = document.querySelector('#sound');
 const rollButton = document.querySelector('#roll');
 function roll() {
+	BeginGame();
 	scene.dataset.rollCountMod5 = ++rollCount % 5;
 	const rolls = [];
 	for (const die of scene.querySelectorAll('.die')) {
@@ -39,6 +40,8 @@ function roll() {
 		rolls.push(roll);
 		die.dataset.result = roll;
 	}
+
+	contHouses = rolls;
 
 	addToHistory(rolls);
 
@@ -49,6 +52,7 @@ scene.addEventListener('click', roll);
 
 // Update roll history
 const rollHistoryList = document.querySelector('#history ol');
+
 function addToHistory(rolls) {
 
 	console.log(rolls[0]);
