@@ -243,11 +243,14 @@ class busca {
 
     sucessor(x, y) {
 
+        var max_x = mapa.length;
+        var max_y = mapa[0].length;
+
         var pos = new No(null, x, y, 0, null, null);
         var acao = [];
 
-        /// :: Ir para direita
-        if (pos.x + 1 < 10) {
+        /// :: Ir para direita, 10
+        if (pos.x + 1 < max_x) {
 
             var xx = pos.x + 1;
             var yy = pos.y;
@@ -284,8 +287,8 @@ class busca {
             }
         }
 
-        /// :: Ir para cima
-        if (pos.y + 1 < 11) {
+        /// :: Ir para cima, 11
+        if (pos.y + 1 < max_y) {
 
             var xx = pos.x;
             var yy = pos.y + 1;
@@ -333,9 +336,9 @@ class busca {
 
     amplitude(inicio, fim) {
 
-        /// :: manipular a FILA para a busca
+        /// :: Manipular a FILA para a busca
         var l1 = new lista();
-        /// :: cópia para apresentar o caminho (somente inserção)
+        /// :: Cópia para apresentar o caminho (somente inserção)
         var l2 = new lista();
 
         l1.insereUltimo(inicio[0], inicio[1], 0, 0, null);
@@ -1066,22 +1069,12 @@ class busca {
 
 }
 
-mapa = [
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, "P", 0],
-    [0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0],
-    [0, 0, "G", 0, 0, 1, 0, 1, 1, 0, 0],
-    [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 1, "C", 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, "G", 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [0, 0, 0, 1, 0, 1, 1, 1, 1, "G", 0],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-]
+mapa = [];
 
-var solucao = new busca()
-var origem = [7, 1]
-var destino = [1, 9]
+/*
+var solucao = new busca();
+var origem = [7, 1];
+var destino = [1, 9];
 
 var a_estrela = solucao.a_estrela(origem, destino);
 console.log("A Estrela.......: ", a_estrela);
@@ -1107,3 +1100,4 @@ console.log("Profundidade.......: ", profundidade);
 var amplitude = solucao.amplitude(origem, destino);
 console.log("Amplitude.......: ", amplitude);
 
+*/
