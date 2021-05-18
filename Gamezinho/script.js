@@ -13,89 +13,37 @@ Game = {
     ],
 
     /// :: Inicia jogo.
-    Start: function () {
-
+    Roll: function () {
         var x = 0;
         var pCasas = [];
-        var total_casas = [];
 
         var numero_colunas = 8;
         var numero_linhas = 8;
         var numero_casas = numero_colunas * numero_linhas;
 
-        var p1ActualHouse = 0;
-        var cpuActualHouse = 0;
-
-
-        var contHouses = 0;
         var turn = true;
-
-
 
         while (x < numero_casas) {
             //console.log("Hey "+x);
-            $("#game").append(" <div class='div-casa' id='" + (x + 1) + "'></div> ");
-            pCasas.push(0);
-
+            $("#game").append(" <div class='div-casa' id='" + x + "'></div> ");
+            pCasas.push(x);
             x = x + 1;
 
             if (x % numero_colunas == 0) {
 
-                total_casas.push(pCasas);
                 $("#game").append("<br>");
-                pCasas = [];
-
             }
 
         }
 
-        //$('.div-casa[id="0"]').attr('id','0').append("<img id='player' src='p1.gif' />");
-        //$('.div-casa[id="1"]').attr('id','0').append("<img id='player' src='enemy.gif' />");
-        //$('.div-casa[id="'+Math.floor(Math.random() * 63).toString()+'"]').append("<img id='player' src='goal.gif' />");
-        //roll();
+        console.log(pCasas);
 
-        //Gerenciador de movimentos
         $('.div-casa').click(function (e) {
 
-            if ($(this).find('img').length > 0) {
-                alert("Movimento inválido");
+            $('.div-casa').empty();
+            $(this).append("<img id='player' src='p1.gif' />");
 
-            } else {
-
-                pCasas = new Array(8).fill(0);
-
-                p1ActualHouse = this.id;
-                pCasas[newHouse] = 1;
-
-                $('.div-casa[name="p1"]').empty();
-                $('.div-casa[name="p1"]').removeAttr("name");
-                $(this).attr("name", "p1");
-                $(this).append("<img id='player' src='p1.gif' />");
-
-            }
         });
-
-
-        //Gerenciador de turnos, enquanto na for a vez dele ele nao faz nada, quando for ele desabilita todos os comandos de andar do player
-
-        function BeginGame() {
-            (function my_func() {
-                if (turn != true) {
-                    $('.div-casa').css({
-                        "pointer-events": "none"
-                        // "pointer-events": ""
-                        // "pointer-events": "none"
-                    });
-
-                } else {
-                    console.log("N é sua vez CPU , restam " + contHouses);
-
-                }
-                setTimeout(my_func, 1000);
-            })();
-        }
-
-
 
     },
 
@@ -119,7 +67,52 @@ Game = {
 
             /// :: Verifica se nao é o click do mapa ou o player.
             if (x !== "mapa" && y !== "mapa" && x !== "player") {
-                Game.Move('P', x, y);
+
+                debugger
+
+                /// :: Base.
+                var player_x = 0;
+                var player_y = 0;
+
+                /// :: Pega a posição do player
+                /// :: Percorre todas as linhas.
+                Game.Mapa.forEach((linhas, yy) => {
+
+                    /// :: Percorre todas as colunas.
+                    linhas.forEach((value, xx) => {
+
+                        /// :: Se encontrou o player.
+                        if (value === 'P') {
+                            player_x = xx;
+                            player_y = yy;
+                        }
+
+                    })
+                })
+
+                debugger
+
+                var totalMovimento = 0;
+
+                if (x > player_x) {
+                    totalMovimento = totalMovimento + x - player_x;
+                } else {
+                    totalMovimento = totalMovimento + player_x - x;
+                }
+
+                if (y > player_y) {
+                    totalMovimento = totalMovimento + y - player_y;
+                } else {
+                    totalMovimento = totalMovimento + player_y - y;
+                }
+
+                if (totalMovimento === 1) {
+                    /// :: Move o personagem.
+                    Game.Move('P', x, y);
+                }
+
+
+
             }
 
         });
@@ -310,5 +303,6 @@ Game = {
     }
 }
 
+Game.Start();
 
-Game.Init();
+///Game.Init();

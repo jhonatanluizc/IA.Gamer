@@ -14,7 +14,7 @@ function updateNumDice(value = null) {
 	// Save configuration
 	localStorage.setItem('numDice', newNumDice);
 }
-numDiceInput.addEventListener('change', () => updateNumDice());
+//numDiceInput.addEventListener('change', () => updateNumDice());
 updateNumDice(localStorage.getItem('numDice'));
 
 // Save/load sound option
