@@ -2,10 +2,10 @@ Game = {
 
     RollRemainP1: 0,
     RollRemainCPU: 0,
-    PlayerTurn: true,
+    EnemyRout: [],
+    CurrentTurn: 'player-roll',
 
-
-    /// :: Mapa do jogo. P = player, E = inimigo,  G = chegada
+    /// :: Mapa do jogo. P = player, E = inimigo, G = chegada.
     Mapa: [
         ['P', 1, 0, 0, 1, 0, 0, 1],
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -13,13 +13,17 @@ Game = {
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 1, 0, 0],
         [0, 0, 0, 1, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0, 0, 0, 0],
-        ['E', 1, 0, 0, 1, 0, 0, 'G']
+        [0, 1, 0, 0, 0, 0, 0, 'G'],
+        ['E', 1, 0, 0, 1, 0, 0, 0]
     ],
 
-    /// :: Inicia jogo.
+    /// :: Roll.
     Roll: function () {
-
+        return roll();
+    },
+    DisableRoll: function () {
+        $('.game-dice').attr("disabled", true);
+        $('.game-dice').click(false);
     },
 
     /// :: Eventos do jogo.
@@ -40,57 +44,170 @@ Game = {
             x = id_coluna.replace("coluna-", "");
             y = id_linha.replace("linha-", "");
 
-            /// :: Verifica se nao é o click do mapa ou o player.
-            if (x !== "mapa" && y !== "mapa" && x !== "player") {
+            if (Game.CurrentTurn === 'player') {
 
-                //debugger
+                debugger
+                /// :: Verifica se nao é o click do mapa ou o player.
+                if (x !== "mapa" && y !== "mapa" && x !== "player" && e.target.className !== "div-casa active") {
 
-                /// :: Base.
-                var player_x = 0;
-                var player_y = 0;
+                    if (x === 'gold') {
+                        debugger
+                        var id_coluna = e.target.parentElement.id;
+                        var id_linha = e.target.parentElement.parentElement.id;
 
-                /// :: Pega a posição do player
-                /// :: Percorre todas as linhas.
-                Game.Mapa.forEach((linhas, yy) => {
+                        x = id_coluna.replace("coluna-", "");
+                        y = id_linha.replace("linha-", "");
+                    }
 
-                    /// :: Percorre todas as colunas.
-                    linhas.forEach((value, xx) => {
+                    /// :: Base.
+                    var player_x = 0;
+                    var player_y = 0;
 
-                        /// :: Se encontrou o player.
-                        if (value === 'P') {
-                            player_x = xx;
-                            player_y = yy;
+                    /// :: Pega a posição do player
+                    /// :: Percorre todas as linhas.
+                    Game.Mapa.forEach((linhas, yy) => {
+
+                        /// :: Percorre todas as colunas.
+                        linhas.forEach((value, xx) => {
+
+                            /// :: Se encontrou o player.
+                            if (value === 'P') {
+                                player_x = xx;
+                                player_y = yy;
+                            }
+
+                        })
+                    })
+
+                    var totalMovimento = 0;
+
+                    /// :: Pega a quantidade de movimento.
+                    if (x > player_x) {
+                        totalMovimento = totalMovimento + x - player_x;
+                    } else {
+                        totalMovimento = totalMovimento + player_x - x;
+                    }
+
+                    if (y > player_y) {
+                        totalMovimento = totalMovimento + y - player_y;
+                    } else {
+                        totalMovimento = totalMovimento + player_y - y;
+                    }
+
+                    if (totalMovimento === 1) {
+
+                        if (Game.RollRemainP1 > 1) {
+
+                            /// :: Move o personagem.
+                            Game.Move('P', x, y);
+                            Game.RollRemainP1--;
+
+                            if (!Game.FindPlayer('G')) {
+                                alert('Você Ganhou');
+                            }
+
+                        } else if (Game.RollRemainP1 === 1) {
+
+                            /// :: Move o personagem.
+                            Game.Move('P', x, y);
+                            Game.RollRemainP1--;
+
+                            Game.CurrentTurn = 'enemy-roll';
+
+                            if (!Game.FindPlayer('G')) {
+                                alert('Você Ganhou');
+                            } else {
+                                $("#mapa").click();
+
+                                alert("Acabou seu turno");
+                            }
+
+
+                        } else {
+                            alert("Espere a sua vez");
+
+                        }
+                    }
+
+                }
+
+            } else if (Game.CurrentTurn === 'player-roll') {
+
+                if (Game.RollRemainP1 === 0) {
+                    alert('Role o dado!')
+                }
+
+            } else if (Game.CurrentTurn === 'enemy-roll') {
+
+                Game.RollRemainCPU = Game.Roll() + 1;
+                Game.CurrentTurn = 'enemy';
+                Game.EnemyRout = Game.Hunt();
+                $("#mapa").click();
+
+            } else if (Game.CurrentTurn === 'enemy') {
+
+                setTimeout(function () {
+
+                    if (Game.RollRemainCPU > 1) {
+
+                        /// :: Move o inimigo.
+                        var currentRout = Game.EnemyRout[0];
+
+                        Game.Move('E', currentRout[1], currentRout[0]);
+                        Game.RollRemainCPU--;
+
+                        if (Game.FindPlayer('P')) {
+
+                            Game.EnemyRout.shift();
+                            $("#mapa").click();
+
+                        } else {
+                            alert("Você Perdeu!");
                         }
 
-                    })
-                })
+                    } else if (Game.RollRemainCPU === 1) {
 
-                //debugger
+                        /// :: Move o inimigo.
+                        var currentRout = Game.EnemyRout[0];
 
-                var totalMovimento = 0;
+                        /// :: Move o inimigo.
+                        Game.Move('E', currentRout[1], currentRout[0]);
+                        Game.RollRemainCPU--;
 
-                if (x > player_x) {
-                    totalMovimento = totalMovimento + x - player_x;
-                } else {
-                    totalMovimento = totalMovimento + player_x - x;
-                }
+                        if (Game.FindPlayer('P')) {
+                            Game.EnemyRout.shift();
+                            $("#mapa").click();
+                            Game.CurrentTurn = 'player-roll';
 
-                if (y > player_y) {
-                    totalMovimento = totalMovimento + y - player_y;
-                } else {
-                    totalMovimento = totalMovimento + player_y - y;
-                }
+                            setTimeout(function () {
+                                alert('Turno do jogador');
+                            }, 500);
+                        } else {
+                            alert("Você Perdeu!");
+                        }
 
-                if (totalMovimento === 1) {
-                    /// :: Move o personagem.
-                    Game.Move('P', x, y);
-                }
+                    }
 
+                }, 800);
 
 
+            } else {
+                alert('Error');
             }
 
         });
+
+        /// :: Quando dar uma rolada.
+        $("#scene").click(function () {
+
+            /// :: Verifica se é a vez do player rolar o dado.
+            if (Game.CurrentTurn === 'player-roll') {
+                Game.RollRemainP1 = Game.Roll();
+                Game.CurrentTurn = 'player';
+            }
+
+        });
+
     },
 
     /// :: Renderiza a matriz.
@@ -119,7 +236,7 @@ Game = {
                     $("#" + id_linha).append("<div id=" + id_coluna + " class='div-casa' ></div>");
 
                     /// :: Adiciona o player na casa.
-                    $("#" + id_linha).find("#" + id_coluna).append("<img id='player' src='p1.gif' />");
+                    $("#" + id_linha).find("#" + id_coluna).append("<img class='player' id='player' src='p1.gif' />");
 
                 } else if (value === "E") {
 
@@ -127,7 +244,7 @@ Game = {
                     $("#" + id_linha).append("<div id=" + id_coluna + " class='div-casa' ></div>");
 
                     /// :: Adiciona o enemy na casa.
-                    $("#" + id_linha).find("#" + id_coluna).append("<img id='player' src='enemy.gif' />");
+                    $("#" + id_linha).find("#" + id_coluna).append("<img class='player' id='player' src='enemy.gif' />");
 
                 } else if (value === "G") {
 
@@ -135,12 +252,12 @@ Game = {
                     $("#" + id_linha).append("<div id=" + id_coluna + " class='div-casa' ></div>");
 
                     /// :: Adiciona o goal na casa.
-                    $("#" + id_linha).find("#" + id_coluna).append("<img id='player' src='goal.gif' />");
+                    $("#" + id_linha).find("#" + id_coluna).append("<img class='player' id='gold' src='goal.gif' />");
 
                 } else if (value === 1) {
 
                     /// :: Adiciona bloco invalido.
-                    $("#" + id_linha).append("<div id=" + id_coluna + " class='div-casa' style='background-color: red;'></div>");
+                    $("#" + id_linha).append("<div id=" + id_coluna + " class='div-casa active' style='background-color: red;'></div>");
                 } else {
 
                     /// :: Adiciona a valido.
@@ -168,26 +285,30 @@ Game = {
 
             })
         })
+
+        Game.Mapa[y][x] = personagem;
+        Game.Render();
     },
 
-    Turn: function () {
+    /// :: Procura o personagem.
+    FindPlayer: function (player) {
 
-        debugger
-        var rolada = roll();
+        var flag = false;
 
-        if (Game.PlayerTurn === true) {
+        /// :: Percorre todas as linhas.
+        Game.Mapa.forEach((linhas) => {
 
-            if (Game.RollRemainP1 > 0) {
-                Game.PlayerTurn = true;
-                Game.RollRemainP1--;
-                console.log(Game.RollRemainP1);
-            } else {
-                Game.PlayerTurn = false;
-                console.log("Não pode");
-            }
+            /// :: Percorre todas as colunas.
+            linhas.forEach((value) => {
 
-        }
+                /// :: Se encontrou o player.
+                if (value === player)
+                    flag = true;
 
+            })
+        })
+
+        return flag;
     },
 
     /// :: Procura o caminho até o jogador e vai em direção a ele.
@@ -213,8 +334,7 @@ Game = {
             })
         })
 
-        //console.log(Game.Algoritmos.Amplitude(pos_jogador, pos_inimigo));
-        console.log(Game.Algoritmos.Amplitude(pos_inimigo, pos_jogador));
+        return Game.Algoritmos.Amplitude(pos_inimigo, pos_jogador);
 
     },
 
@@ -295,7 +415,4 @@ Game = {
     }
 }
 
-
-//Game.Start();
 Game.Init();
-Game.Turn();

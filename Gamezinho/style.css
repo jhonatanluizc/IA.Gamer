@@ -30,7 +30,7 @@
   background: wheat;
 }
 
-#player {
+.player {
   display: block;
   width: 80%;
   height: 80%;
@@ -74,4 +74,10 @@
     height: 30px;
     margin: 1px;
   }
+}
+
+.game-dice {
+  width: 300px;
+  position: absolute;
+  top: 0;
 }
