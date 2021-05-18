@@ -1,5 +1,10 @@
 Game = {
 
+    RollRemainP1: 0,
+    RollRemainCPU: 0,
+    PlayerTurn: true,
+
+
     /// :: Mapa do jogo. P = player, E = inimigo,  G = chegada
     Mapa: [
         ['P', 1, 0, 0, 1, 0, 0, 1],
@@ -14,36 +19,6 @@ Game = {
 
     /// :: Inicia jogo.
     Roll: function () {
-        var x = 0;
-        var pCasas = [];
-
-        var numero_colunas = 8;
-        var numero_linhas = 8;
-        var numero_casas = numero_colunas * numero_linhas;
-
-        var turn = true;
-
-        while (x < numero_casas) {
-            //console.log("Hey "+x);
-            $("#game").append(" <div class='div-casa' id='" + x + "'></div> ");
-            pCasas.push(x);
-            x = x + 1;
-
-            if (x % numero_colunas == 0) {
-
-                $("#game").append("<br>");
-            }
-
-        }
-
-        console.log(pCasas);
-
-        $('.div-casa').click(function (e) {
-
-            $('.div-casa').empty();
-            $(this).append("<img id='player' src='p1.gif' />");
-
-        });
 
     },
 
@@ -68,7 +43,7 @@ Game = {
             /// :: Verifica se nao é o click do mapa ou o player.
             if (x !== "mapa" && y !== "mapa" && x !== "player") {
 
-                debugger
+                //debugger
 
                 /// :: Base.
                 var player_x = 0;
@@ -90,7 +65,7 @@ Game = {
                     })
                 })
 
-                debugger
+                //debugger
 
                 var totalMovimento = 0;
 
@@ -193,9 +168,26 @@ Game = {
 
             })
         })
+    },
 
-        Game.Mapa[y][x] = personagem;
-        Game.Render();
+    Turn: function () {
+
+        debugger
+        var rolada = roll();
+
+        if (Game.PlayerTurn === true) {
+
+            if (Game.RollRemainP1 > 0) {
+                Game.PlayerTurn = true;
+                Game.RollRemainP1--;
+                console.log(Game.RollRemainP1);
+            } else {
+                Game.PlayerTurn = false;
+                console.log("Não pode");
+            }
+
+        }
+
     },
 
     /// :: Procura o caminho até o jogador e vai em direção a ele.
@@ -303,6 +295,7 @@ Game = {
     }
 }
 
-Game.Start();
 
-///Game.Init();
+//Game.Start();
+Game.Init();
+Game.Turn();
